@@ -34,6 +34,8 @@ function General() {
 		Twitter: Assets.getIDByName('img_account_sync_twitter_white'),
 		GitHub: Assets.getIDByName('img_account_sync_github_white'),
 		Development: Assets.getIDByName('ic_progress_wrench_24px'),
+        Plugins: Assets.getIDByName('ic_activity_24px'),
+        Themes: Assets.getIDByName('ic_paint_brush'),
 		Toasts: Assets.getIDByName('ic_notification_settings'),
 		Retry: Assets.getIDByName('ic_message_retry'),
 		Discord: Assets.getIDByName('Discord'),
@@ -89,14 +91,14 @@ function General() {
 			<TableRowGroupWrapper title={i18n.Messages.UNBOUND_INFO}>
 				<TableRow
 					label='Installed Plugins'
-					icon={<Icon.Puzzle width={24} height={24} />}
+					icon={<TableRowIcon source={Icons.Plugins} />}
 					trailing={<RN.Text style={styles.trailingText}>
 						{Plugins.addons.length}
 					</RN.Text>}
 				/>
 				<TableRow
 					label='Installed Themes'
-					icon={<Icon.Palette width={24} height={24} />}
+					icon={<TableRowIcon source={Icons.Themes} />}
 					trailing={<RN.Text style={styles.trailingText}>
 						{Themes.addons.length}
 					</RN.Text>}
