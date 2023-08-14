@@ -9,18 +9,18 @@ export default function () {
 	const [search, setSearch] = React.useState<string>();
 
 	const payload = [...assets.values()].filter(a => a.type === 'png');
-	const data = search ? [] : payload;
+	const data = React.useMemo(() => search ? [] : payload, [search]);
 
 	if (search) {
-		for (const asset of payload) {
-			if (
-				asset.name.toLowerCase().includes(search) ||
-				asset.httpServerLocation.toLowerCase().includes(search)
-			) {
-				data.push(asset);
-			}
-		}
-	}
+        for (const asset of payload) {
+            if (
+                asset.name.toLowerCase().includes(search.toLowerCase())
+                || asset.httpServerLocation.toLowerCase().includes(search)
+            ) {
+                data.push(asset);
+            }
+        }
+    }
 
 	return <RN.View>
 		<Search
