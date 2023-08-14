@@ -1,7 +1,18 @@
 import { ReactNative as RN, React, StyleSheet, Constants, Moment, Theme, i18n } from '@metro/common';
-import { Forms, Navigation } from '@metro/components';
+import { Redesign, Navigation } from '@metro/components';
 import { Icons } from '@api/assets';
 import Logger from '@stores/logger';
+import { TableRowGroupWrapper } from '@ui/components';
+
+const LevelSelection = {
+    variant(level: number) {
+        return ['muted', 'normal', 'warning', 'danger'][level]
+    },
+
+    icon(level: number) {
+        return ['ic_settings', 'ic_chat_bubble_16px', 'ic_warning_24px', 'failure-header'][level]
+    }
+}
 
 export default function () {
 	const navigation = Navigation.useNavigation();
@@ -12,7 +23,7 @@ export default function () {
         navigation.setOptions({ headerRight: HeaderRight });
     });
 
-	return <Forms.FormSection style={{ flex: 1 }}>
+	return <TableRowGroupWrapper style={{ flex: 1, marginBottom: 16 }}>
 		<RN.FlatList
 			data={store.logs.sort((a, b) => a.time - b.time)}
 			keyExtractor={(_, idx) => String(idx)}
@@ -25,44 +36,17 @@ export default function () {
 					{i18n.Messages.UNBOUND_LOGS_EMPTY}
 				</RN.Text>
 			</RN.View>}
-			ItemSeparatorComponent={Forms.FormDivider}
 			renderItem={({ item }) => {
-				// to-do: move this out of render to avoid event listener leak
-				const styles = StyleSheet.createThemedStyleSheet({
-					log: {
-						fontSize: 16,
-						fontFamily: Constants.Fonts.DISPLAY_SEMIBOLD,
-						color: (() => {
-							switch (item.level) {
-								case 1:
-									return Theme.colors.TEXT_NORMAL;
-								case 0:
-									return Theme.colors.TEXT_MUTED;
-								case 2:
-									return 'yellow';
-								case 3:
-									return 'red';
-							}
-						})(),
-					},
-					time: {
-						fontSize: 16,
-						fontFamily: Constants.Fonts.DISPLAY_SEMIBOLD,
-						color: Theme.colors.TEXT_MUTED
-					}
-				});
-
-				return <Forms.FormRow
-					label={() => <RN.Text style={styles.log}>
-						{item.message}
-					</RN.Text>}
+				return <Redesign.TableRow
+					label={item.message}
 					subLabel={Moment(item.time).format('HH:mm:ss.SSS')}
+                    variant={LevelSelection.variant(item.level)}
+                    icon={<Redesign.TableRowIcon source={Icons[LevelSelection.icon(item.level)]} />}
 				/>;
 			}}
 		/>
-	</Forms.FormSection>;
+	</TableRowGroupWrapper>;
 }
-
 
 const styles = StyleSheet.createThemedStyleSheet({
 	touchable: {

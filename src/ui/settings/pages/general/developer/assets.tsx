@@ -1,8 +1,9 @@
 import { React, ReactNative as RN, i18n } from '@metro/common';
 import { assets } from '@api/assets';
 
-import { Forms, Search } from '@metro/components';
+import { Search } from '@metro/components';
 import Asset from '@ui/settings/components/asset';
+import { TableRowGroupWrapper } from '@ui/components';
 
 export default function () {
 	const [search, setSearch] = React.useState<string>();
@@ -28,14 +29,21 @@ export default function () {
 			onClear={() => setSearch('')}
 			value={search}
 		/>
-		<Forms.FormSection style={{ flex: 1 }}>
-			<RN.FlatList
-				keyExtractor={(_, idx) => String(idx)}
-				data={data}
-				ItemSeparatorComponent={Forms.FormDivider}
-				initialNumToRender={20}
-				renderItem={({ item }) => <Asset item={item} />}
-			/>
-		</Forms.FormSection>
+        {/* The FlatList (or anything in fact) will not render with the new TableRowGroup here unless the parent is a ScrollView */}
+        {/* If the parent is a ScrollView the FlatList has unexpected behavior */}
+        <TableRowGroupWrapper old>
+            <RN.FlatList
+                keyExtractor={(_, idx) => String(idx)}
+                data={data}
+                initialNumToRender={20}
+                renderItem={({ item, index }) => (
+                    <Asset 
+                        item={item} 
+                        index={index} 
+                        total={data.length} 
+                    />
+                )}
+            />
+        </TableRowGroupWrapper>
 	</RN.View>;
 }
