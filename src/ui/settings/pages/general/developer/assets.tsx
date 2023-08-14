@@ -31,7 +31,7 @@ export default function () {
 		/>
         {/* The FlatList (or anything in fact) will not render with the new TableRowGroup here unless the parent is a ScrollView */}
         {/* If the parent is a ScrollView the FlatList has unexpected behavior */}
-        <TableRowGroupWrapper old>
+        <TableRowGroupWrapper style={{ marginTop: -12, marginBottom: 160 }} old>
             <RN.FlatList
                 keyExtractor={(_, idx) => String(idx)}
                 data={data}
