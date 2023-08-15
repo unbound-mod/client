@@ -39,4 +39,5 @@ export function AdvancedSearch({ searchContext, controls }: AdvancedSearchProps)
     </BaseSearch.default>
 }
 
+Object.assign(AdvancedSearch, { useAdvancedSearch });
 export default AdvancedSearch;
