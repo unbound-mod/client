@@ -16,7 +16,7 @@ export default function () {
 
 	const Icons = {
 		Debug: Assets.getIDByName('debug'),
-		Sparkle: Assets.getIDByName('ic_sparkle3'),
+		Browser: Assets.getIDByName('ic_image'),
         Trash: Assets.getIDByName('trash')
 	};
 
@@ -31,7 +31,7 @@ export default function () {
             />
             <TableRow
                 label={i18n.Messages.UNBOUND_ASSET_BROWSER}
-                icon={<TableRowIcon source={Icons.Sparkle} />}
+                icon={<TableRowIcon source={Icons.Browser} />}
                 onPress={() => navigation.push(Keys.Custom, {
                     title: i18n.Messages.UNBOUND_ASSET_BROWSER,
                     render: AssetBrowser

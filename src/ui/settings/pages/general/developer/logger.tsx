@@ -3,8 +3,10 @@ import { Redesign, Navigation } from '@metro/components';
 import { Icons } from '@api/assets';
 import Logger from '@stores/logger';
 import { TableRowGroupWrapper } from '@ui/components';
+import AdvancedSearch, { useAdvancedSearch } from '@ui/components/AdvancedSearch';
 
-const LevelSelection = {
+const searchContext = { type: "LOGGER" };
+const levelSelection = {
     variant(level: number) {
         return ['muted', 'normal', 'warning', 'danger'][level]
     },
@@ -17,35 +19,48 @@ const LevelSelection = {
 export default function () {
 	const navigation = Navigation.useNavigation();
 	const store = Logger.useStore();
+    const [query, controls] = useAdvancedSearch(searchContext)
 
+    const data = React.useMemo(() => store.logs
+        .filter(item => item.message?.toLowerCase()?.includes(query))
+        .sort((a, b) => a.time - b.time), [query])
     const unsubscribe = navigation.addListener('focus', () => {
         unsubscribe();
         navigation.setOptions({ headerRight: HeaderRight });
     });
 
-	return <TableRowGroupWrapper style={{ flex: 1, marginBottom: 16 }}>
-		<RN.FlatList
-			data={store.logs.sort((a, b) => a.time - b.time)}
-			keyExtractor={(_, idx) => String(idx)}
-			ListEmptyComponent={<RN.View style={styles.empty}>
-				<RN.Image
-					style={styles.emptyImage}
-					source={Icons['img_connection_empty_dark']}
-				/>
-				<RN.Text style={styles.emptyMessage}>
-					{i18n.Messages.UNBOUND_LOGS_EMPTY}
-				</RN.Text>
-			</RN.View>}
-			renderItem={({ item }) => {
-				return <Redesign.TableRow
-					label={item.message}
-					subLabel={Moment(item.time).format('HH:mm:ss.SSS')}
-                    variant={LevelSelection.variant(item.level)}
-                    icon={<Redesign.TableRowIcon source={Icons[LevelSelection.icon(item.level)]} />}
-				/>;
-			}}
-		/>
-	</TableRowGroupWrapper>;
+	return <RN.ScrollView>
+        <RN.View style={{ marginHorizontal: 16 }}>
+            <AdvancedSearch 
+                searchContext={searchContext}
+                controls={controls}
+            />
+        </RN.View>
+        <TableRowGroupWrapper style={{ flex: 1, marginBottom: 16 }}>
+            <RN.FlatList
+                data={data}
+                keyExtractor={(_, idx) => String(idx)}
+                scrollEnabled={false}
+                ListEmptyComponent={<RN.View style={styles.empty}>
+                    <RN.Image
+                        style={styles.emptyImage}
+                        source={Icons['img_connection_empty_dark']}
+                    />
+                    <RN.Text style={styles.emptyMessage}>
+                        {i18n.Messages.UNBOUND_LOGS_EMPTY}
+                    </RN.Text>
+                </RN.View>}
+                renderItem={({ item }) => {
+                    return <Redesign.TableRow
+                        label={item.message}
+                        subLabel={Moment(item.time).format('HH:mm:ss.SSS')}
+                        variant={levelSelection.variant(item.level)}
+                        icon={<Redesign.TableRowIcon source={Icons[levelSelection.icon(item.level)]} />}
+                    />;
+                }}
+            />
+        </TableRowGroupWrapper>
+    </RN.ScrollView>
 }
 
 const styles = StyleSheet.createThemedStyleSheet({
