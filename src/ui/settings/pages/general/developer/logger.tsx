@@ -29,14 +29,14 @@ export default function () {
         navigation.setOptions({ headerRight: HeaderRight });
     });
 
-	return <RN.ScrollView>
-        <RN.View style={{ marginHorizontal: 16 }}>
+	return <RN.View>
+        <RN.View style={{ marginHorizontal: 16, marginBottom: 12 }}>
             <AdvancedSearch 
                 searchContext={searchContext}
                 controls={controls}
             />
         </RN.View>
-        <TableRowGroupWrapper style={{ flex: 1, marginBottom: 16 }}>
+        <TableRowGroupWrapper style={{ flex: 1, marginBottom: 16 }} margin={false}>
             <RN.FlatList
                 data={data}
                 keyExtractor={(_, idx) => String(idx)}
@@ -60,7 +60,7 @@ export default function () {
                 }}
             />
         </TableRowGroupWrapper>
-    </RN.ScrollView>
+    </RN.View>
 }
 
 const styles = StyleSheet.createThemedStyleSheet({

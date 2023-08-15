@@ -1,5 +1,5 @@
-import { Theme, StyleSheet, React, ReactNative } from '@metro/common';
-import { Forms, Redesign } from '@metro/components';
+import { Theme, StyleSheet, React, ReactNative as RN } from '@metro/common';
+import { Redesign } from '@metro/components';
 
 export const { endStyle } = StyleSheet.createThemedStyleSheet({
     endStyle: {
@@ -12,33 +12,26 @@ export const { endStyle } = StyleSheet.createThemedStyleSheet({
 interface TableRowGroupProps {
     children?: React.ReactNode,
     style?: any;
-    old?: boolean;
+    margin?: boolean;
     [k: PropertyKey]: any;
 }
 
-export default ({ children, style, old, ...props }: TableRowGroupProps) => {
-    const overlappingStyles = [{ marginHorizontal: 16 }, style];
-
-    if (old) {
-        return <Forms.FormSection 
-            sectionBodyStyle={[
-                ...overlappingStyles,
-                { backgroundColor: 'transparent' }
-            ]} 
-            {...props}
-        >
-            {children}
-        </Forms.FormSection>
-    }
-
-    return <ReactNative.View 
-        style={[ 
-            ...overlappingStyles, 
-            { marginTop: 16 }
-        ]}
-    >
-        <Redesign.TableRowGroup {...props}>
-            {children}
-        </Redesign.TableRowGroup>
-    </ReactNative.View>
+export default ({ children, style, margin = true, ...props }: TableRowGroupProps) => {
+    return (
+        <RN.ScrollView>
+            <RN.View 
+                style={[ 
+                    style,
+                    { 
+                        marginHorizontal: 16,
+                        ...margin ? { marginTop: 16 } : {}
+                    }, 
+                ]}
+            >
+                <Redesign.TableRowGroup {...props}>
+                    {children}
+                </Redesign.TableRowGroup>
+            </RN.View>
+        </RN.ScrollView>
+    )
 }

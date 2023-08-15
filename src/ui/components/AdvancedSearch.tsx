@@ -1,5 +1,10 @@
 import { findByName, findByProps } from '@metro';
 import { noop } from '@utilities';
+import { React, ReactNative as RN } from '@metro/common';
+
+const BaseSearch = findByProps('useSearchControls', { lazy: true });
+const SettingSearch = findByProps('useSettingSearchQuery', { lazy: true })
+const SettingSearchBar = findByName('SettingSearchBar', { interop: false, lazy: true });
 
 interface SearchContext {
     type: string;
@@ -11,13 +16,14 @@ interface AdvancedSearchProps {
     controls: NonNullable<unknown>;
 }
 
-const BaseSearch = findByProps('useSearchControls', { lazy: true });
-const SettingSearch = findByProps('useSettingSearchQuery', { lazy: true })
-const SettingSearchBar = findByName('SettingSearchBar', { interop: false, lazy: true });
+type AdvancedSearchType = {
+    (props: AdvancedSearchProps): React.ReactElement;
+    useAdvancedSearch: typeof useAdvancedSearch
+}
 
-export function useAdvancedSearch(searchContext: SearchContext) {
-    const controls = BaseSearch.useSearchControls(searchContext, false, noop);
-    const query = SettingSearch.useSettingSearchQuery();
+export const useAdvancedSearch = (searchContext: SearchContext) => {
+    const query: string = SettingSearch.useSettingSearchQuery();
+    const controls: Record<string, any> = BaseSearch.useSearchControls(searchContext, false, noop);
 
     React.useEffect(() => {
         // Set the query back to nothing again so that it doesn't persist to the real SettingSearch
@@ -27,17 +33,25 @@ export function useAdvancedSearch(searchContext: SearchContext) {
         }
     }, [])
 
-    return [query, controls];
+    return [query, controls] as const;
 }
 
-export function AdvancedSearch({ searchContext, controls }: AdvancedSearchProps) {
-    return <BaseSearch.default 
-        searchContext={searchContext}
-        controls={controls}
-    >
-        <SettingSearchBar.default />
-    </BaseSearch.default>
-}
+export const AdvancedSearch = (({ searchContext, controls }: AdvancedSearchProps) => {
+    // This Search component will not render unless the direct parent or one of the recent parents is a ScrollView.
+    // Therefore, I'm going to get rid of this dependency by using one and setting `scrollEnabled` to false.
+    return (
+        <RN.ScrollView scrollEnabled={false}>
+            <BaseSearch.default 
+                searchContext={searchContext}
+                controls={controls}
+            >
+                <SettingSearchBar.default />
+            </BaseSearch.default>
+        </RN.ScrollView>
+    )
+}) as AdvancedSearchType
+// We can lie to TypeScript saying that `useAdvancedSearch` exists on the function
+// This is fine because it is assigned on the line below.
 
 Object.assign(AdvancedSearch, { useAdvancedSearch });
 export default AdvancedSearch;

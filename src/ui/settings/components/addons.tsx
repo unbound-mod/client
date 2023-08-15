@@ -57,8 +57,8 @@ export default function ({ addons, type, shouldRestart }: AddonListProps) {
 		}
 	}
 
-	return <RN.ScrollView>
-        <RN.View style={{ marginLeft: 10 }}>
+	return <RN.View>
+        <RN.View style={{ marginHorizontal: 10 }}>
             <AdvancedSearch 
                 searchContext={searchContext}
                 controls={controls}
@@ -72,7 +72,6 @@ export default function ({ addons, type, shouldRestart }: AddonListProps) {
         <RN.FlatList
             data={data}
             keyExtractor={(_, idx) => String(idx)}
-            scrollEnabled={false}
             renderItem={(item) => <AddonCard
                 recovery={isRecovery}
                 shouldRestart={shouldRestart}
@@ -90,5 +89,5 @@ export default function ({ addons, type, shouldRestart }: AddonListProps) {
                 </RN.Text>
             </RN.View>}
         />
-	</RN.ScrollView >;
+	</RN.View >;
 }

@@ -21,14 +21,14 @@ export default function () {
         })
     }, [query])
 
-	return <RN.ScrollView>
-        <RN.View style={{ marginHorizontal: 16 }}>
+	return <RN.View>
+        <RN.View style={{ marginHorizontal: 16, marginBottom: 12 }}>
             <AdvancedSearch 
                 searchContext={searchContext}
                 controls={controls}
             />
         </RN.View>
-        <TableRowGroupWrapper style={{ marginTop: -12, marginBottom: 160 }}>
+        <TableRowGroupWrapper style={{ flex: 1, marginBottom: 160 }} margin={false}>
             <RN.FlatList
                 keyExtractor={(asset) => asset.id.toString()}
                 data={data}
@@ -43,5 +43,5 @@ export default function () {
                 )}
             />
         </TableRowGroupWrapper>
-	</RN.ScrollView>;
+	</RN.View>;
 }
