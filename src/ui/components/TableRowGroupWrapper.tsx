@@ -1,5 +1,5 @@
-import { Theme, StyleSheet, React, ReactNative } from "@metro/common";
-import { Forms, Redesign } from "@metro/components";
+import { Theme, StyleSheet, React, ReactNative } from '@metro/common';
+import { Forms, Redesign } from '@metro/components';
 
 export const { endStyle } = StyleSheet.createThemedStyleSheet({
     endStyle: {
@@ -23,7 +23,7 @@ export default ({ children, style, old, ...props }: TableRowGroupProps) => {
         return <Forms.FormSection 
             sectionBodyStyle={[
                 ...overlappingStyles,
-                { backgroundColor: "transparent" }
+                { backgroundColor: 'transparent' }
             ]} 
             {...props}
         >

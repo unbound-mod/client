@@ -1,41 +1,39 @@
-import { React, ReactNative as RN, i18n } from '@metro/common';
+import { React, ReactNative as RN } from '@metro/common';
 import { assets } from '@api/assets';
 
-import { Search } from '@metro/components';
 import Asset from '@ui/settings/components/asset';
 import { TableRowGroupWrapper } from '@ui/components';
+import AdvancedSearch, { useAdvancedSearch } from '@ui/components/AdvancedSearch';
+import { findByProps } from '@metro';
+
+const DividerModule = findByProps('TableRowDivider', { lazy: true });
+
+const payload = [...assets.values()].filter(a => a.type === 'png');
+const searchContext = { type: 'ASSETS' }
 
 export default function () {
-	const [search, setSearch] = React.useState<string>();
+    const [query, controls] = useAdvancedSearch(searchContext);
 
-	const payload = [...assets.values()].filter(a => a.type === 'png');
-	const data = React.useMemo(() => search ? [] : payload, [search]);
+    const data = React.useMemo(() => {
+        return payload.filter((asset) => {
+            if (!query) return true;
+            return asset.name.toLowerCase().includes(query.toLowerCase());
+        })
+    }, [query])
 
-	if (search) {
-        for (const asset of payload) {
-            if (
-                asset.name.toLowerCase().includes(search.toLowerCase())
-                || asset.httpServerLocation.toLowerCase().includes(search)
-            ) {
-                data.push(asset);
-            }
-        }
-    }
-
-	return <RN.View>
-		<Search
-			placeholder={i18n.Messages.UNBOUND_SEARCH_ASSETS}
-			onChangeText={search => setSearch(search)}
-			onClear={() => setSearch('')}
-			value={search}
-		/>
-        {/* The FlatList (or anything in fact) will not render with the new TableRowGroup here unless the parent is a ScrollView */}
-        {/* If the parent is a ScrollView the FlatList has unexpected behavior */}
-        <TableRowGroupWrapper style={{ marginTop: -12, marginBottom: 160 }} old>
+	return <RN.ScrollView>
+        <RN.View style={{ marginHorizontal: 16 }}>
+            <AdvancedSearch 
+                searchContext={searchContext}
+                controls={controls}
+            />
+        </RN.View>
+        <TableRowGroupWrapper style={{ marginTop: -12, marginBottom: 160 }}>
             <RN.FlatList
-                keyExtractor={(_, idx) => String(idx)}
+                keyExtractor={(asset) => asset.id.toString()}
                 data={data}
-                initialNumToRender={20}
+                scrollEnabled={false}
+                ItemSeparatorComponent={DividerModule.TableRowDivider}
                 renderItem={({ item, index }) => (
                     <Asset 
                         item={item} 
@@ -45,5 +43,5 @@ export default function () {
                 )}
             />
         </TableRowGroupWrapper>
-	</RN.View>;
+	</RN.ScrollView>;
 }

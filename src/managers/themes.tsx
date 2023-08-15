@@ -83,7 +83,7 @@ class Themes extends Manager {
 		const { instance: { background } } = addon;
 
 		const Chat = findByName('MessagesWrapperConnected', { interop: false });
-        const { MessagesWrapper } = findByProps("MessagesWrapper", { lazy: true });
+        const { MessagesWrapper } = findByProps('MessagesWrapper');
 
 		this.patcher.after(Chat, 'default', (_, __, res) => {
 			return <ReactNative.ImageBackground
@@ -96,12 +96,12 @@ class Themes extends Manager {
 
         this.patcher.after(MessagesWrapper.prototype, 'render', (_, __, res) => {
             const Messages = findInReactTree(res, x => 
-                "HACK_fixModalInteraction" in x.props 
+                'HACK_fixModalInteraction' in x.props 
                 && x.props?.style
             );
 
             if (Messages) {
-                Messages.props.style = [Messages.props.style, { backgroundColor: "#00000000" }]
+                Messages.props.style = [Messages.props.style, { backgroundColor: '#00000000' }]
             }
         })
 	}

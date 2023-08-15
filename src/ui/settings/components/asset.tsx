@@ -12,7 +12,7 @@ export default class extends React.PureComponent<{ item: Asset; index: number; t
 
         return <TableRow
             label={item.name}
-            subLabel={`${item.type.toUpperCase()} - ${item.width}x${item.height}`}
+            subLabel={`${item.type.toUpperCase()} - ${item.width}x${item.height} - ${item.id}`}
             trailing={<RN.Image 
                 source={item.id} 
                 style={{
@@ -34,7 +34,7 @@ export default class extends React.PureComponent<{ item: Asset; index: number; t
                     height: 0,
                     x: event.pageX,
                     y: event.pageY,
-                    resizeMode: "fill",
+                    resizeMode: 'fill',
                 },
                 initialSources: [{
                     uri,
