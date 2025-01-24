@@ -7,7 +7,7 @@ import { CACHE_KEY } from '@constants';
 import Filters from './filters';
 
 
-const blacklist = [];
+const blacklist = new Set();
 
 export { CACHE_KEY } from '@constants';
 export type * from '@typings/api/metro';
@@ -27,7 +27,7 @@ for (let i = 0, len = Cache.moduleIds.length; i < len; i++) {
 	const mdl = window.modules.get(id);
 
 	if (Cache.hasModuleFlag(id, ModuleFlags.BLACKLISTED)) {
-		blacklist.push(id);
+		blacklist.add(id);
 		continue;
 	}
 
@@ -43,7 +43,7 @@ for (let i = 0, len = Cache.moduleIds.length; i < len; i++) {
 
 			if (isInvalidExport(exported)) {
 				Cache.addModuleFlag(moduleObject.id, ModuleFlags.BLACKLISTED);
-				blacklist.push(moduleObject.id);
+				blacklist.add(moduleObject.id);
 			} else {
 				// TODO: Fix android.
 				// if (!data.patchedRTNProfiler && exported.default?.reactProfilingEnabled) {
@@ -149,8 +149,6 @@ export function find(filter: Filter | Filter, options: SearchOptions = {}) {
 		for (const id of cache) {
 			const rawModule = window.modules.get(id);
 			if (!rawModule) continue;
-
-			if (blacklist.includes(id)) continue;
 
 			if (!rawModule.isInitialized) {
 				const initialized = initializeModule(id);
@@ -273,7 +271,7 @@ export function initializeModule(id: number) {
 		return true;
 	} catch (e) {
 		Cache.addModuleFlag(id, ModuleFlags.BLACKLISTED);
-		blacklist.push(id);
+		blacklist.add(id);
 		return false;
 	}
 }
@@ -284,7 +282,7 @@ function searchExports(filter: Fn, rawModule: any, id: number, esModules: boolea
 
 	if (isInvalidExport(mdl)) {
 		Cache.addModuleFlag(id, ModuleFlags.BLACKLISTED);
-		blacklist.push(id);
+		blacklist.add(id);
 		return null;
 	}
 
