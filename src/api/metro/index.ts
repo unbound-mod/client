@@ -259,6 +259,8 @@ export function findByName<U extends string, T extends U[] | StringFindWithOptio
 };
 
 export function initializeModule(id: number) {
+	if (blacklist.has(id)) return;
+
 	try {
 		__r(id);
 
