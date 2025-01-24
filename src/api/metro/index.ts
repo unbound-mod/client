@@ -45,16 +45,17 @@ for (let i = 0, len = Cache.moduleIds.length; i < len; i++) {
 				Cache.addModuleFlag(moduleObject.id, ModuleFlags.BLACKLISTED);
 				blacklist.add(moduleObject.id);
 			} else {
-				// TODO: Fix android.
-				// if (!data.patchedRTNProfiler && exported.default?.reactProfilingEnabled) {
-				// 	const offender = (Number(id) + 1).toString();
+				if (!data.patchedRTNProfiler && exported.default?.reactProfilingEnabled) {
+					const offender = id + 1;
 
-				// 	Cacher.addFlag(offender, ModuleFlags.BLACKLISTED);
-				// 	deenumerate(offender);
-				// 	i++;
+					if (!window.modules.get(offender)?.isInitialized) {
+						Cache.addModuleFlag(offender, ModuleFlags.BLACKLISTED);
+						blacklist.add(offender);
+						i++;
 
-				// 	data.patchedRTNProfiler = true;
-				// }
+						data.patchedRTNProfiler = true;
+					}
+				}
 
 				if (!data.patchedNativeRequire && exported.default?.name === 'requireNativeComponent') {
 					const orig = exported.default;
