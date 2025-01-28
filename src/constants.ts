@@ -32,6 +32,7 @@ export const ManagerIcons = {
 	[ManagerKind.PLUGINS]: 'StaffBadgeIcon',
 	[ManagerKind.THEMES]: 'ic_paint_brush',
 	[ManagerKind.ICONS]: 'ic_star_filled',
+	[ManagerKind.FONTS]: 'ic_add_text',
 	[ManagerKind.SOURCES]: 'grid',
 };
 
