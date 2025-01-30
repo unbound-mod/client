@@ -1,3 +1,4 @@
+import {checkForUpdates} from "@ui/addons/install-modal";
 import { Section, useFormStyles } from '@ui/misc/forms';
 import { SettingsKeys, SocialLinks } from '@constants';
 import { ScrollView, View, Text } from 'react-native';
@@ -151,6 +152,12 @@ export default function Developer() {
 					title: Strings.UNBOUND_ASSET_BROWSER,
 					render: AssetBrowser
 				})}
+				arrow
+			/>
+			<TableRow
+				label="Check for updates"
+				icon={<TableRowIcon source={Icons.Retry} />}
+				onPress={async () => await checkForUpdates()}
 				arrow
 			/>
 		</Section>
