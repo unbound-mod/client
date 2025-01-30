@@ -5,12 +5,14 @@ import { useSettingsStore } from '@api/storage';
 import { Discord } from '@api/metro/components';
 import { showDialog } from '@api/dialogs';
 import { SocialLinks } from '@constants';
-import { showToast } from '@api/toasts';
-import { capitalize } from '@utilities';
+import Toasts, { showToast } from '@api/toasts';
 import * as managers from '@managers';
 import { View } from 'react-native';
 import { Strings } from '@api/i18n';
 import { Icons } from '@api/assets';
+import * as Managers from "@managers";
+import {createTimeoutSignal} from "@utilities";
+import { compareSemanticVersions, getHighestVersion} from "@utilities/compareSemanticVersions";
 
 
 interface InstallModalProps {
@@ -152,6 +154,77 @@ export function showInstallAlert({ type, ref }: InstallModalProps) {
 		componentMargin: false,
 		cancelButton: false
 	});
+}
+
+export async function checkForUpdates() {
+	Toasts.showToast({
+		title: `Checking for Updates`,
+		duration: 2000
+	});
+	//Themes are doing weird stuff and sometimes come up multiple times
+	const existingAssets = []
+	for (const theme of window.UNBOUND_THEMES ?? []) {
+		const {manifest, bundle} = theme;
+
+		if (!(manifest.id in existingAssets)) {
+
+			if (manifest.hasOwnProperty("updates")) {
+				const origin = manifest.url.split('/');
+				origin.pop();
+				const updatesURL = new URL(manifest.updates, origin.join('/') + '/');
+
+				const updateRequest = await fetch(updatesURL, {
+					cache: 'no-cache',
+					signal: createTimeoutSignal()
+				}).catch((error) => {
+					this.logger.error('Failed to fetch bundle URL:', error.message);
+					this.emit('install-error', error);
+
+				});
+
+				if (!updateRequest) return false;
+
+				if (!updateRequest.ok) {
+					//logger doesnt wanna work :/
+					console.error(`Failed to fetch bundle URL (${updateRequest.status}: ${updateRequest.statusText ?? 'No status text.'})`);
+					continue;
+				}
+
+				const updates = await updateRequest.json();
+				const highestVer = getHighestVersion(updates);
+				const latestVersionObject = updates.find(v => v.version === highestVer); //Maybe use for later for Patchnotes
+
+				if (compareSemanticVersions(highestVer, manifest.version) > 0) {
+					showDialog({
+						title: manifest.name,
+						content: `The Theme "${manifest.name}" has an Update: \n${manifest.version}->${highestVer}\nWould you like to update?`,
+						buttons: [
+							{
+								text: "Update now",
+								onPress: () => installUpdates(manifest.url, manifest.name)
+							},
+
+						]
+					});
+				} else if (compareSemanticVersions(highestVer, manifest.version) == 0) {
+					//Check if TS is newer
+				}
+
+
+			}
+
+		}
+
+
+	}
+
+}
+
+function installUpdates(updates, name) {
+	Managers.Themes.install(updates).then(r => Toasts.showToast({
+		title: `Updated ${name}`,
+		duration: 2000
+	}));
 }
 
 export default { InstallInput, InternalInstallInput };
